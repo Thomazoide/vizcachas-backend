@@ -35,6 +35,7 @@ export class BleService {
             }
         });
         if (!bleExists) throw new EntityNotFoundError(Ble, "");
+        await this.repo.delete(bleExists);
         return;
     }
 

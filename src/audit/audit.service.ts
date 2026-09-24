@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
-import { Audit, OpType } from "../models/audit.model.js";
+import { Audit, OpType, TableNames } from "../models/audit.model.js";
 import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
@@ -25,5 +25,9 @@ export class AuditService {
                 operation_type: report_type
             }
         });
+    }
+
+    LogNewAudit(audit: Audit): void {
+        console.log(`Registro de auditoría creado: ${audit}`);
     }
 };

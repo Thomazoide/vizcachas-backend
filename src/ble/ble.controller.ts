@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Post, Put } from "@nestjs/common";
 import { BleService } from "./ble.service.js";
 import { ResponsePayload } from "../payloads/response.payloads.js";
 import { Ble } from "../models/ble.model.js";
 import { EntityNotFoundError } from "typeorm";
+import { AuditService } from "../audit/audit.service.js";
 
 @Controller("ble")
 export class BleController {
     constructor(
-        private readonly service: BleService
+        private readonly service: BleService,
+        private readonly audit: AuditService
     ){};
 
     @Get()
@@ -31,13 +33,24 @@ export class BleController {
     @Post()
     async CreateBLE(
         @Body()
-        data: Partial<Ble>
+        data: Partial<Ble>,
+        @Headers("uid")
+        user_id: string
     ): Promise<ResponsePayload<Ble>> {
         try {
+            const newBle = await this.service.Create(data);
+            const audit = await this.audit.CreateAuditReport({
+                entity_ID: newBle.ID,
+                entity_table_name: "ble",
+                operation_type: "C",
+                operation_date: new Date(),
+                user_ID: user_id
+            })
+            this.audit.LogNewAudit(audit);
             return {
                 status_code: HttpStatus.CREATED,
                 message: "BLE creado",
-                data: await this.service.Create(data),
+                data: newBle,
                 error: false
             };
         } catch (e) {
@@ -52,13 +65,24 @@ export class BleController {
     @Put()
     async UpdateBLE(
         @Body()
-        data: Partial<Ble>
+        data: Partial<Ble>,
+        @Headers("uid")
+        user_id: string
     ): Promise<ResponsePayload<Ble>> {
         try {
+            const updatedBle = await this.service.Update(data);
+            const audit = await this.audit.CreateAuditReport({
+                entity_ID: updatedBle.ID,
+                entity_table_name: "ble",
+                operation_type: "U",
+                operation_date: new Date(),
+                user_ID: user_id
+            });
+            this.audit.LogNewAudit(audit);
             return {
                 status_code: HttpStatus.OK,
                 message: `Ble ${data.mac} actualizado`,
-                data: await this.service.Update(data),
+                data: updatedBle,
                 error: false
             };
         } catch (e) {
@@ -74,13 +98,24 @@ export class BleController {
     @Get("mac/:MAC")
     async GetByMAC(
         @Param("MAC")
-        bleMAC: string
+        bleMAC: string,
+        @Headers("uid")
+        user_id: string
     ): Promise<ResponsePayload<Ble>> {
         try {
+            const ble = await this.service.FindByMAC(bleMAC);
+            const audit = await this.audit.CreateAuditReport({
+                entity_ID: ble.ID,
+                entity_table_name: "ble",
+                operation_type: "R",
+                operation_date: new Date(),
+                user_ID: user_id
+            });
+            this.audit.LogNewAudit(audit);
             return {
                 status_code: HttpStatus.OK,
                 message: `Dispositivo ${bleMAC} encontrado`,
-                data: await this.service.FindByMAC(bleMAC),
+                data: ble,
                 error: false
             };
         } catch (e) {
@@ -96,13 +131,24 @@ export class BleController {
     @Get(":ID")
     async GetByID(
         @Param("ID")
-        bleID: string
+        bleID: string,
+        @Headers("uid")
+        user_id: string
     ): Promise<ResponsePayload<Ble>> {
         try {
+            const ble = await this.service.FindByID(bleID);
+            const audit = await this.audit.CreateAuditReport({
+                entity_ID: ble.ID,
+                entity_table_name: "ble",
+                operation_type: "R",
+                operation_date: new Date(),
+                user_ID: user_id
+            });
+            this.audit.LogNewAudit(audit);
             return {
                 status_code: HttpStatus.OK,
                 message: "BLE encontrado",
-                data: await this.service.FindByID(bleID),
+                data: ble,
                 error: false
             };
         } catch (e) {
@@ -117,9 +163,20 @@ export class BleController {
     @Delete(":ID")
     async DeleteByID(
         @Param("ID")
-        bleID: string
+        bleID: string,
+        @Headers("uid")
+        user_id: string
     ): Promise<ResponsePayload<Ble>> {
         try {
+            await this.service.Delete(bleID);
+            const audit = await this.audit.CreateAuditReport({
+                entity_ID: bleID,
+                entity_table_name: "ble",
+                operation_type: "D",
+                operation_date: new Date(),
+                user_ID: user_id
+            });
+            this.audit.LogNewAudit(audit);
             return {
                 status_code: HttpStatus.OK,
                 message: `Dispositivo ${bleID} eliminado`,
