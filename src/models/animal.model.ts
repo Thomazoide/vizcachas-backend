@@ -17,4 +17,6 @@ export class Animal {
     image_url: string | null;
     @Column({type: "timestamp"})
     created_at: Date;
+    @Column({type: "timestamp", default: null})
+    deleted_at: Date | null;
 };

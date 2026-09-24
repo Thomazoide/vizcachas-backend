@@ -11,4 +11,6 @@ export class Ble {
     animal: Animal
     @Column({type: "timestamp"})
     created_at: Date;
+    @Column({type: "timestamp", default: null})
+    deleted_at: Date | null;
 };

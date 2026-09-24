@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Ble } from "../models/ble.model.js";
-import { EntityNotFoundError, Repository } from "typeorm";
+import { EntityNotFoundError, IsNull, Repository } from "typeorm";
 
 @Injectable()
 export class BleService {
@@ -11,7 +11,11 @@ export class BleService {
     ){};
 
     async GetAll(): Promise<Ble[]> {
-        return await this.repo.find();
+        return await this.repo.find({
+            where: {
+                deleted_at: IsNull()
+            }
+        });
     }
 
     async Create(data: Partial<Ble>): Promise<Ble> {
@@ -35,7 +39,8 @@ export class BleService {
             }
         });
         if (!bleExists) throw new EntityNotFoundError(Ble, "");
-        await this.repo.delete(bleExists);
+        bleExists.deleted_at = new Date();
+        await this.repo.save(bleExists);
         return;
     }
 

@@ -1,8 +1,15 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
-export type OpType = "C" | "R" | "U" | "D";
+/*
+C = Create
+R = Read
+U = Update
+D = Delete
+L = Login
+*/
+export type OpType = "C" | "R" | "U" | "D" | "L";
 
-export type TableNames = "user" | "animal" | "ble" | "client";
+export type TableNames = "user" | "animal" | "ble";
 
 @Entity({
     name: "audit"

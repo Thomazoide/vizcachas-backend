@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Animal } from "../models/animal.model.js";
-import { EntityNotFoundError, Repository } from "typeorm";
+import { EntityNotFoundError, IsNull, Repository } from "typeorm";
 
 @Injectable()
 export class AnimalService {
@@ -11,18 +11,24 @@ export class AnimalService {
     ){};
 
     async GetAllAnimals(): Promise<Animal[]> {
-        return this.repo.find();
+        return this.repo.find({
+            where: {
+                deleted_at: IsNull()
+            }
+        });
     }
 
     async CreateAnimal(newAnimal: Partial<Animal>): Promise<Animal> {
-        return this.repo.save(newAnimal);
+        const animal = this.repo.create(newAnimal);
+        animal.created_at = new Date();
+        return this.repo.save(animal);
     }
 
     async UpdateAnimal(updatedAnimal: Partial<Animal>): Promise<Animal> {
         const animalExists = await this.repo.findOne({
             where: {
                 ID: updatedAnimal.ID
-            }
+            },
         });
         if (!animalExists) throw new EntityNotFoundError(Animal, "");
         return this.repo.save(updatedAnimal);
@@ -35,6 +41,8 @@ export class AnimalService {
             }
         });
         if (!animalExists) throw new EntityNotFoundError(Animal, "");
+        animalExists.deleted_at = new Date();
+        await this.repo.save(animalExists);
         return;
     }
 
