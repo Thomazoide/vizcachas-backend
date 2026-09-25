@@ -3,6 +3,7 @@ import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { Animal } from "../models/animal.model.js";
 import { Ble } from "../models/ble.model.js";
 import { Audit } from "../models/audit.model.js";
+import { User } from "../models/user.model.js";
 
 export const DBCONFIG = (env: ConfigService): TypeOrmModuleOptions => {
     return {
@@ -12,7 +13,7 @@ export const DBCONFIG = (env: ConfigService): TypeOrmModuleOptions => {
         database: env.get<string>("POSTGRES_DB"),
         username: env.get<string>("POSTGRES_USER"),
         password: env.get<string>("POSTGRES_PASSWORD"),
-        entities: [Animal, Ble, Audit],
+        entities: [Animal, Ble, Audit, User],
         synchronize: true,
     }
 }
