@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { Question } from "./question.model.js";
 
 @Entity("alternative")
@@ -9,9 +9,9 @@ export class Alternative {
   description: string;
   @Column({ name: "is_correct", type: "boolean", default: false })
   isCorrect: boolean;
-  @Column({ type: "timestamp" })
+  @CreateDateColumn({ type: "timestamp" })
   created_at: Date;
-  @Column({ type: "timestamp", default: null })
+  @DeleteDateColumn({ type: "timestamp", default: null })
   deleted_at: Date | null;
   @Column({ name: "question_id" })
   questionID: string;

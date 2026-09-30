@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 import { Ble } from "./ble.model.js";
 import { Trivia } from "./trivia.model.js";
 
@@ -14,12 +14,12 @@ export class Animal {
   active: boolean;
   @OneToOne( () => Ble, ble => ble.animal, {nullable: true} )
   ble: Ble;
-  @OneToOne(() => Trivia, trivia => trivia.animal)
-  trivia: Trivia;
+  @OneToMany(() => Trivia, trivia => trivia.animal)
+  trivias: Trivia[];
   @Column({default: null})
   image_url: string | null;
-  @Column({type: "timestamp"})
+  @CreateDateColumn({type: "timestamp"})
   created_at: Date;
-  @Column({type: "timestamp", default: null})
+  @DeleteDateColumn({type: "timestamp", default: null})
   deleted_at: Date | null;
 };

@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToOne, PrimaryColumn } from "typeorm";
 import { Animal } from "./animal.model.js";
 
 @Entity({name: "ble"})
@@ -9,8 +9,8 @@ export class Ble {
     mac: string;
     @OneToOne(() => Animal, animal => animal.ble, {nullable: true})
     animal: Animal
-    @Column({type: "timestamp"})
+    @CreateDateColumn({type: "timestamp"})
     created_at: Date;
-    @Column({type: "timestamp", default: null})
+    @DeleteDateColumn({type: "timestamp", default: null})
     deleted_at: Date | null;
 };

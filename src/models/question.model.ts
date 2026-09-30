@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { Trivia } from "./trivia.model.js";
 import { Alternative } from "./alternative.model.js";
 
@@ -8,10 +8,10 @@ export class Question {
   ID: string;
   @Column({ type: "text" })
   description: string;
-  @Column({ type: "timestamp" })
+  @CreateDateColumn({ type: "timestamp" })
   created_at: Date;
-  @Column({ type: "timestamp", default: null })
-  deletes_at: Date | null;
+  @DeleteDateColumn({ type: "timestamp", default: null })
+  deleted_at: Date | null;
   @Column({ name: "trivia_id" })
   triviaID: string;
   @ManyToOne(() => Trivia, trivia => trivia.questions)

@@ -1,6 +1,8 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 import { Animal } from "./animal.model.js";
 import { Question } from "./question.model.js";
+import { TriviaBadge } from "./trivia-badge.model.js";
+import { Badge } from "./badge.model.js";
 
 @Entity({ name: "trivia" })
 export class Trivia {
@@ -10,13 +12,15 @@ export class Trivia {
   title: string;
   @Column({ name: "animal_id" })
   animalID: string;
-  @Column({ type: "timestamp" })
+  @CreateDateColumn({ type: "timestamp" })
   crated_at: Date;
-  @Column({type: "timestamp", default: null})
+  @DeleteDateColumn({type: "timestamp", default: null})
   deleted_at: Date | null;
-  @OneToOne(() => Animal, animal => animal.trivia)
+  @ManyToOne(() => Animal, animal => animal.trivias)
   @JoinColumn({ name: "animal_id" })
   animal: Animal;
   @OneToMany(() => Question, question => question.trivia)
   questions: Question[];
+  @OneToMany(() => TriviaBadge, tb => tb.trivia)
+  badges: Badge[];
 };

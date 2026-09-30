@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
 
 /*
 C = Create
@@ -19,7 +19,7 @@ export class Audit {
     ID: string;
     @Column({nullable: false})
     operation_type: OpType;
-    @Column({type: "timestamp"})
+    @CreateDateColumn({type: "timestamp"})
     operation_date: Date;
     @Column({type: "uuid", nullable: false})
     entity_ID: string;
