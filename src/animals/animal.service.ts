@@ -6,7 +6,7 @@ import { EntityNotFoundError, IsNull, Repository } from "typeorm";
 @Injectable()
 export class AnimalService {
     constructor(
-        @InjectRepository(Animal) 
+        @InjectRepository(Animal)
         private readonly repo: Repository<Animal>
     ){};
 
@@ -20,7 +20,6 @@ export class AnimalService {
 
     async CreateAnimal(newAnimal: Partial<Animal>): Promise<Animal> {
         const animal = this.repo.create(newAnimal);
-        animal.created_at = new Date();
         return this.repo.save(animal);
     }
 
@@ -41,8 +40,7 @@ export class AnimalService {
             }
         });
         if (!animalExists) throw new EntityNotFoundError(Animal, "");
-        animalExists.deleted_at = new Date();
-        await this.repo.save(animalExists);
+        await this.repo.softDelete(animalExists.ID);
         return;
     }
 

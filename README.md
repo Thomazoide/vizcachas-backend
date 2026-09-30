@@ -25,6 +25,37 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## CRUD de trivias e insignias
+
+Los recursos `/trivias`, `/questions`, `/alternatives`, `/badges`,
+`/user-badges`, `/trivia-badges` y `/trivia-completions` siguen el patrón de
+`/animals`:
+
+- `GET /recurso`: listar registros activos.
+- `GET /recurso/:ID`: consultar un registro.
+- `POST /recurso`: crear con los campos del modelo en el cuerpo JSON.
+- `PUT /recurso`: actualizar; requiere `ID` en el cuerpo JSON.
+- `DELETE /recurso/:ID`: eliminar un registro.
+
+Las operaciones individuales usan el encabezado `uid` (UUID del usuario) para
+registrar auditoría. Las respuestas mantienen el formato `ResponsePayload`
+(`status_code`, `message`, `data`, `error`); `status_code` es un campo del cuerpo,
+no necesariamente el estado HTTP del transporte, igual que en `animals`.
+La escritura y su auditoría no forman una única transacción.
+
+Se usa borrado lógico salvo en `user-badges` y `trivia-badges`, que se eliminan
+físicamente porque sus modelos no tienen `deleted_at`. No se cargan relaciones
+automáticamente ni se calculan puntajes o conceden insignias automáticamente.
+
+Estos CRUD mantienen el enfoque actual de `Partial<Entity>`: no incorporan DTOs
+con validación ni guards de autorización. `uid` no autentica al usuario. Antes de
+exponerlos a clientes, protege especialmente la modificación de puntajes,
+respuestas correctas y asignaciones de insignias.
+
+Las entidades están registradas en TypeORM. La configuración existente usa
+`synchronize: true`, por lo que al iniciar puede modificar el esquema; en
+producción debe sustituirse por migraciones.
+
 ## Project setup
 
 ```bash

@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { type Relation, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { Question } from "./question.model.js";
 
 @Entity("alternative")
@@ -11,11 +11,11 @@ export class Alternative {
   isCorrect: boolean;
   @CreateDateColumn({ type: "timestamp" })
   created_at: Date;
-  @DeleteDateColumn({ type: "timestamp", default: null })
+  @DeleteDateColumn({ type: "timestamp", nullable: true, default: null })
   deleted_at: Date | null;
-  @Column({ name: "question_id" })
+  @Column({ name: "question_id", type: "uuid" })
   questionID: string;
   @ManyToOne(() => Question, question => question.alternatives)
   @JoinColumn({name: "question_id"})
-  question: Question;
+  question: Relation<Question>;
 };

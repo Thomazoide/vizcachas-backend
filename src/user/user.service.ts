@@ -78,8 +78,7 @@ export class UserService {
             }
         });
         if (!findedUser) throw new EntityNotFoundError(User, "");
-        findedUser.deleted_at = new Date();
-        await this.repo.save(findedUser);
+        await this.repo.softDelete(findedUser.ID);
         return;
     }
 

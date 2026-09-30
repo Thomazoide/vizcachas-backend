@@ -39,8 +39,7 @@ export class BleService {
             }
         });
         if (!bleExists) throw new EntityNotFoundError(Ble, "");
-        bleExists.deleted_at = new Date();
-        await this.repo.save(bleExists);
+        await this.repo.softDelete(bleExists.ID);
         return;
     }
 

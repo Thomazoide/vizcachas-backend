@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, Unique } from "typeorm";
+import { type Relation, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, Unique } from "typeorm";
 import { Badge } from "./badge.model.js";
 import { User } from "./user.model.js";
 
@@ -7,16 +7,16 @@ import { User } from "./user.model.js";
 export class UserBadge {
   @PrimaryColumn({ primary: true, generated: "uuid", type: "uuid" })
   ID: string;
-  @Column()
+  @Column({ type: "uuid" })
   badge_id: string;
-  @Column()
+  @Column({ type: "uuid" })
   user_id: string;
   @CreateDateColumn({type: "timestamp"})
   earned_at: Date;
   @ManyToOne(() => Badge, badge => badge.user_badge, { nullable: false })
   @JoinColumn({ name: "badge_id" })
-  badge: Badge;
+  badge: Relation<Badge>;
   @ManyToOne(() => User, user => user.badges, { nullable: false })
   @JoinColumn({ name: "user_id" })
-  user: User;
+  user: Relation<User>;
 };
