@@ -1,4 +1,4 @@
-import { type Relation, Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
+import { type Relation, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 import { Ble } from "./ble.model.js";
 import { Trivia } from "./trivia.model.js";
 
@@ -12,7 +12,10 @@ export class Animal {
   name: string;
   @Column({type: "boolean", default: true})
   active: boolean;
-  @OneToOne( () => Ble, ble => ble.animal, {nullable: true} )
+  @Column({type: "uuid", default: null})
+  ble_id: string | null;
+  @OneToOne(() => Ble, ble => ble.animal, { nullable: true })
+  @JoinColumn({ name: "ble_id" })
   ble: Relation<Ble>;
   @OneToMany(() => Trivia, trivia => trivia.animal)
   trivias: Relation<Trivia[]>;

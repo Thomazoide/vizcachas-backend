@@ -3,6 +3,8 @@ import { AnimalService } from "./animal.service.js";
 import { ResponsePayload } from "../payloads/response.payloads.js";
 import { Animal } from "../models/animal.model.js";
 import { AuditService } from "../audit/audit.service.js";
+import { CheckError } from "../utils/error-verifier.util.js";
+import { EntityNotFoundError } from "typeorm";
 
 @Controller("animals")
 export class AnimalController {
@@ -91,6 +93,36 @@ export class AnimalController {
         }
     }
 
+    @Get("mac/:MAC")
+    async FindAnimalByMAC(
+      @Param("MAC")
+      mac: string,
+      @Headers("uid")
+      user_id: string
+    ): Promise<ResponsePayload<Animal>> {
+      try {
+        const animal = await this.service.FindByBLE(mac);
+        const audit = await this.audit.CreateAuditReport({
+          entity_ID: animal.ID,
+          entity_table_name: "animal",
+          operation_type: "R",
+          user_ID: user_id
+        });
+        return {
+          status_code: HttpStatus.OK,
+          message: animal.name,
+          data: animal,
+          error: false
+        };
+      } catch (e) {
+        return {
+          status_code: e instanceof EntityNotFoundError ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST,
+          message: CheckError(e),
+          error: true
+        };
+      }
+    }
+
     @Get(":ID")
     async GetAnimalByID(
         @Param("ID")
@@ -151,4 +183,6 @@ export class AnimalController {
             };
         }
     }
+
+
 };

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Animal } from "../models/animal.model.js";
 import { EntityNotFoundError, IsNull, Repository } from "typeorm";
@@ -53,4 +53,26 @@ export class AnimalService {
         if (!animalExists) throw new EntityNotFoundError(Animal, "");
         return animalExists;
     }
+
+  async FindByBLE(mac: string): Promise<Animal> {
+    if (typeof mac !== "string" || !mac.trim()) throw new BadRequestException("La dirección MAC es inválida");
+    const normalizedMAC = mac.trim();
+    const animal = await this.repo.findOne({
+      relations: {
+        ble: true
+      },
+      where: {
+        ble: {
+          mac: normalizedMAC,
+          deleted_at: IsNull()
+        },
+      }
+    });
+    if (!animal) throw new EntityNotFoundError(Animal, {
+      ble: {
+        mac: normalizedMAC
+      }
+    });
+    return animal;
+  }
 }

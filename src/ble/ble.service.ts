@@ -18,9 +18,11 @@ export class BleService {
         });
     }
 
-    async Create(data: Partial<Ble>): Promise<Ble> {
-        return await this.repo.save(data);
-    }
+  async Create(data: Partial<Ble>): Promise<Ble> {
+    const newBLE = data;
+    newBLE.mac = data.mac?.toUpperCase()
+    return await this.repo.save(newBLE);
+  }
 
     async Update(data: Partial<Ble>): Promise<Ble> {
         const bleExists = await this.repo.findOne({
